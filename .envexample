@@ -1,0 +1,8 @@
+PORT=5000
+MONGODB_URI=mongodb+srv://rafaelsanchez2:1234@cluster.jqij4vk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster
+JWT_SECRET=1234
+EMAIL_USER=rat9.experiments@gmail.com
+EMAIL_PASS=wcji cqej rhvp bhfd
+CLOUD_UPLOAD_URL=https://api.cloudinary.com/v1_1/...
+CLOUD_UPLOAD_PRESET=...
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
