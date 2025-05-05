@@ -1,7 +1,7 @@
 const request = require('supertest');
-const app = require('../app');  // Aquí apunta al archivo principal de tu aplicación
+const app = require('../app');
 const mongoose = require('mongoose');
-const User = require('../models/User');  // Asegúrate de tener el modelo de Usuario
+const User = require('../models/User');
 
 let authToken = '';  // Variable global para el token
 let verificationCode = ''; // Variable global para el código de verificación

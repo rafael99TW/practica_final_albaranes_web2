@@ -21,7 +21,7 @@ const clientSchema = new mongoose.Schema(
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',  // Relacionado con el usuario que lo crea
+      ref: 'User',
       required: true
     },
     isDeleted: {

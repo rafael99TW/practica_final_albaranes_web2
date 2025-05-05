@@ -1,0 +1,7 @@
+# .gitignore para un proyecto de Node.js
+
+# Archivos de configuración sensible
+.env
+
+# Dependencias de Node.js
+node_modules/
