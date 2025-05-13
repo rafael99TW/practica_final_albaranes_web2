@@ -1,6 +1,6 @@
 const Project = require('../models/Project');
 const Client = require('../models/Client');
-const { sendSlack } = require('../utils/slack'); 
+const sendSlack = require('../utils/slack');
 
 // Crear proyecto
 const createProject = async (req, res) => {
