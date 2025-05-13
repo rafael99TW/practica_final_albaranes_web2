@@ -1,5 +1,5 @@
 const Client = require('../models/Client');
-const { sendSlack } = require('../utils/slack');
+const sendSlack = require('../utils/slack');
 
 // Crear un cliente
 const createClient = async (req, res) => {
