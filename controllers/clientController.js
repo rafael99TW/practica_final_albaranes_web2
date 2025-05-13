@@ -1,4 +1,5 @@
 const Client = require('../models/Client');
+const { sendSlackNotification } = require('../utils/slack'); // Asegúrate de tener este helper
 
 // Crear un cliente
 const createClient = async (req, res) => {
@@ -11,8 +12,11 @@ const createClient = async (req, res) => {
       address,
       createdBy: req.user.id
     });
-    
+
     await client.save();
+
+    await sendSlackNotification(`🆕 Cliente creado: ${name} (${email}) por el usuario ${req.user.id}`);
+
     res.status(201).json(client);
   } catch (err) {
     res.status(500).json({ message: 'Error al crear el cliente', error: err.message });
@@ -35,7 +39,7 @@ const getClientById = async (req, res) => {
   try {
     const client = await Client.findOne({ _id: id, createdBy: req.user.id, isDeleted: false });
     if (!client) return res.status(404).json({ message: 'Cliente no encontrado' });
-    
+
     res.status(200).json(client);
   } catch (err) {
     res.status(500).json({ message: 'Error al obtener el cliente', error: err.message });
@@ -53,8 +57,10 @@ const updateClient = async (req, res) => {
       { name, email, phone, address },
       { new: true }
     );
-    
+
     if (!client) return res.status(404).json({ message: 'Cliente no encontrado' });
+
+    await sendSlackNotification(`✏️ Cliente actualizado: ${client.name} por el usuario ${req.user.id}`);
 
     res.status(200).json(client);
   } catch (err) {
@@ -71,8 +77,10 @@ const archiveClient = async (req, res) => {
       { isDeleted: true },
       { new: true }
     );
-    
+
     if (!client) return res.status(404).json({ message: 'Cliente no encontrado' });
+
+    await sendSlackNotification(`📦 Cliente archivado: ${client.name} por el usuario ${req.user.id}`);
 
     res.status(200).json({ message: 'Cliente archivado correctamente' });
   } catch (err) {
@@ -86,6 +94,8 @@ const deleteClient = async (req, res) => {
   try {
     const client = await Client.findOneAndDelete({ _id: id, createdBy: req.user.id });
     if (!client) return res.status(404).json({ message: 'Cliente no encontrado' });
+
+    await sendSlackNotification(`🗑️ Cliente eliminado: ${client.name} por el usuario ${req.user.id}`);
 
     res.status(200).json({ message: 'Cliente eliminado correctamente' });
   } catch (err) {
