@@ -128,7 +128,7 @@ describe('PATCH /api/user/', () => {
     it('Deberia crear un cliente en el usuario logueado', async () => {
       const clientData = {
         name: 'Test Client',
-        email: 'testClient@example.com',
+        email: 'testClient8@example.com',
         phone: '1234567890',
         address: 'Client Address',
       };
@@ -141,7 +141,7 @@ describe('PATCH /api/user/', () => {
       // Verificación de la respuesta
       expect(response.status).toBe(201);
       expect(response.body.name).toBe('Test Client');
-      expect(response.body.email).toBe('testClient@example.com');
+      expect(response.body.email).toBe('testClient8@example.com');
       expect(response.body.phone).toBe('1234567890');
       expect(response.body.address).toBe('Client Address');
 

@@ -3,3 +3,4 @@ MONGODB_URI=your_mongodb_connection_string_here
 JWT_SECRET=your_jwt_secret_here
 EMAIL_USER=your_email_here
 EMAIL_PASS=your_application_email_password_here
+SLACK_WEBHOOK_URL=slack_webhook_url_here
