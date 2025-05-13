@@ -1,5 +1,5 @@
 const Client = require('../models/Client');
-const { sendSlackNotification } = require('../utils/slack'); // Asegúrate de tener este helper
+const { sendSlackNotification } = require('../utils/slack');
 
 // Crear un cliente
 const createClient = async (req, res) => {

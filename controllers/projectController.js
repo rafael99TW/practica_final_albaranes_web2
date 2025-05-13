@@ -1,71 +1,70 @@
 const Project = require('../models/Project');
 const Client = require('../models/Client');
+const { sendSlackNotification } = require('../utils/slack'); 
 
 // Crear proyecto
 const createProject = async (req, res) => {
-    try {
-      const { name, client } = req.body;
-  
-      // Validación básica
-      if (!name || !client) {
-        return res.status(400).json({ message: 'Nombre y cliente son obligatorios.' });
-      }
-  
-      // Verifica que el cliente exista y no esté eliminado
-      const existingClient = await Client.findOne({
-        _id: client,
-        $or: [
-          { createdBy: req.user.id },
-          { company: req.user.company } // Si se usa lógica de compañía
-        ],
-        isDeleted: false,
-      });
-  
-      if (!existingClient) {
-        return res.status(404).json({ message: 'Cliente no encontrado.' });
-      }
-  
-      // Crea el proyecto
-      const newProject = new Project({
-        name,
-        client,
-        createdBy: req.user.id,
-        company: req.user.company,  // Aquí asignamos la compañía al proyecto
-      });
-  
-      const savedProject = await newProject.save();
-      res.status(201).json(savedProject);
-    } catch (error) {
-      console.error('Error al crear proyecto:', error);
-      res.status(500).json({ message: 'Error al crear el proyecto.' });
+  try {
+    const { name, client } = req.body;
+
+    if (!name || !client) {
+      return res.status(400).json({ message: 'Nombre y cliente son obligatorios.' });
     }
-  };
-  
+
+    const existingClient = await Client.findOne({
+      _id: client,
+      $or: [
+        { createdBy: req.user.id },
+        { company: req.user.company }
+      ],
+      isDeleted: false,
+    });
+
+    if (!existingClient) {
+      return res.status(404).json({ message: 'Cliente no encontrado.' });
+    }
+
+    const newProject = new Project({
+      name,
+      client,
+      createdBy: req.user.id,
+      company: req.user.company,
+    });
+
+    const savedProject = await newProject.save();
+
+    await sendSlackNotification(`📁 Proyecto creado: *${savedProject.name}* por <@${req.user.id}>`);
+
+    res.status(201).json(savedProject);
+  } catch (error) {
+    console.error('Error al crear proyecto:', error);
+    res.status(500).json({ message: 'Error al crear el proyecto.' });
+  }
+};
+
 // Obtener todos los proyectos del usuario o de su compañía
 const getProjects = async (req, res) => {
-    try {
-      console.log(req.user);  // Verifica si 'company' está disponible
-    
-      const projects = await Project.find({
-        $or: [
-          { createdBy: req.user.id },
-          { company: req.user.company._id }  // Asegúrate de acceder al _id de company
-        ],
-        archived: false,
-      })
-        .populate('client')
-        .sort({ createdAt: -1 });
-    
-      if (projects.length === 0) {
-        return res.status(404).json({ message: 'No se encontraron proyectos.' });
-      }
-    
-      res.json(projects);
-    } catch (err) {
-      res.status(500).json({ message: 'Error al obtener los proyectos.' });
+  try {
+    const projects = await Project.find({
+      $or: [
+        { createdBy: req.user.id },
+        { company: req.user.company._id }
+      ],
+      archived: false,
+    })
+      .populate('client')
+      .sort({ createdAt: -1 });
+
+    if (projects.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron proyectos.' });
     }
-  };
-  
+
+    res.json(projects);
+  } catch (err) {
+    res.status(500).json({ message: 'Error al obtener los proyectos.' });
+  }
+};
+
   
 
 // Obtener un proyecto por ID
@@ -102,13 +101,16 @@ const updateProject = async (req, res) => {
     );
 
     if (!project) return res.status(404).json({ message: 'Proyecto no encontrado.' });
+
+    await sendSlackNotification(`✏️ Proyecto actualizado: *${project.name}* por <@${req.user.id}>`);
+
     res.json(project);
   } catch (err) {
     res.status(500).json({ message: 'Error al actualizar el proyecto.' });
   }
 };
 
-// Archivar proyecto (soft delete)
+// Archivar proyecto
 const archiveProject = async (req, res) => {
   try {
     const project = await Project.findOneAndUpdate(
@@ -124,13 +126,16 @@ const archiveProject = async (req, res) => {
     );
 
     if (!project) return res.status(404).json({ message: 'Proyecto no encontrado.' });
+
+    await sendSlackNotification(`📦 Proyecto archivado: *${project.name}* por <@${req.user.id}>`);
+
     res.json({ message: 'Proyecto archivado.', project });
   } catch (err) {
     res.status(500).json({ message: 'Error al archivar el proyecto.' });
   }
 };
 
-// Recuperar proyecto archivado
+// Restaurar proyecto
 const unarchiveProject = async (req, res) => {
   try {
     const project = await Project.findOneAndUpdate(
@@ -146,13 +151,16 @@ const unarchiveProject = async (req, res) => {
     );
 
     if (!project) return res.status(404).json({ message: 'Proyecto no encontrado.' });
+
+    await sendSlackNotification(`🔓 Proyecto restaurado: *${project.name}* por <@${req.user.id}>`);
+
     res.json({ message: 'Proyecto restaurado.', project });
   } catch (err) {
     res.status(500).json({ message: 'Error al restaurar el proyecto.' });
   }
 };
 
-// Eliminar proyecto (hard delete)
+// Eliminar proyecto
 const deleteProject = async (req, res) => {
   try {
     const project = await Project.findOneAndDelete({
@@ -164,6 +172,9 @@ const deleteProject = async (req, res) => {
     });
 
     if (!project) return res.status(404).json({ message: 'Proyecto no encontrado.' });
+
+    await sendSlackNotification(`❌ Proyecto eliminado: *${project.name}* por <@${req.user.id}>`);
+
     res.json({ message: 'Proyecto eliminado permanentemente.' });
   } catch (err) {
     res.status(500).json({ message: 'Error al eliminar el proyecto.' });

@@ -2,7 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/sendEmail');
-const sendSlack = require('../utils/slack'); // Nueva línea
+const sendSlack = require('../utils/slack');
 
 // Generar código aleatorio de 6 dígitos
 const generateValidationCode = () => Math.floor(100000 + Math.random() * 900000).toString();
