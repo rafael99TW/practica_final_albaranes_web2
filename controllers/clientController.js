@@ -1,5 +1,5 @@
 const Client = require('../models/Client');
-const { sendSlackNotification } = require('../utils/slack');
+const { sendSlack } = require('../utils/slack');
 
 // Crear un cliente
 const createClient = async (req, res) => {
@@ -15,7 +15,7 @@ const createClient = async (req, res) => {
 
     await client.save();
 
-    await sendSlackNotification(`🆕 Cliente creado: ${name} (${email}) por el usuario ${req.user.id}`);
+    await sendSlack(`🆕 Cliente creado: ${name} (${email}) por el usuario ${req.user.id}`);
 
     res.status(201).json(client);
   } catch (err) {
@@ -60,7 +60,7 @@ const updateClient = async (req, res) => {
 
     if (!client) return res.status(404).json({ message: 'Cliente no encontrado' });
 
-    await sendSlackNotification(`✏️ Cliente actualizado: ${client.name} por el usuario ${req.user.id}`);
+    await sendSlack(`✏️ Cliente actualizado: ${client.name} por el usuario ${req.user.id}`);
 
     res.status(200).json(client);
   } catch (err) {
@@ -80,7 +80,7 @@ const archiveClient = async (req, res) => {
 
     if (!client) return res.status(404).json({ message: 'Cliente no encontrado' });
 
-    await sendSlackNotification(`📦 Cliente archivado: ${client.name} por el usuario ${req.user.id}`);
+    await sendSlack(`📦 Cliente archivado: ${client.name} por el usuario ${req.user.id}`);
 
     res.status(200).json({ message: 'Cliente archivado correctamente' });
   } catch (err) {
@@ -95,7 +95,7 @@ const deleteClient = async (req, res) => {
     const client = await Client.findOneAndDelete({ _id: id, createdBy: req.user.id });
     if (!client) return res.status(404).json({ message: 'Cliente no encontrado' });
 
-    await sendSlackNotification(`🗑️ Cliente eliminado: ${client.name} por el usuario ${req.user.id}`);
+    await sendSlack(`🗑️ Cliente eliminado: ${client.name} por el usuario ${req.user.id}`);
 
     res.status(200).json({ message: 'Cliente eliminado correctamente' });
   } catch (err) {

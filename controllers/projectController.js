@@ -1,6 +1,6 @@
 const Project = require('../models/Project');
 const Client = require('../models/Client');
-const { sendSlackNotification } = require('../utils/slack'); 
+const { sendSlack } = require('../utils/slack'); 
 
 // Crear proyecto
 const createProject = async (req, res) => {
@@ -33,7 +33,7 @@ const createProject = async (req, res) => {
 
     const savedProject = await newProject.save();
 
-    await sendSlackNotification(`📁 Proyecto creado: *${savedProject.name}* por <@${req.user.id}>`);
+    await sendSlack(`📁 Proyecto creado: *${savedProject.name}* por <@${req.user.id}>`);
 
     res.status(201).json(savedProject);
   } catch (error) {
@@ -102,7 +102,7 @@ const updateProject = async (req, res) => {
 
     if (!project) return res.status(404).json({ message: 'Proyecto no encontrado.' });
 
-    await sendSlackNotification(`✏️ Proyecto actualizado: *${project.name}* por <@${req.user.id}>`);
+    await sendSlack(`✏️ Proyecto actualizado: *${project.name}* por <@${req.user.id}>`);
 
     res.json(project);
   } catch (err) {
@@ -127,7 +127,7 @@ const archiveProject = async (req, res) => {
 
     if (!project) return res.status(404).json({ message: 'Proyecto no encontrado.' });
 
-    await sendSlackNotification(`📦 Proyecto archivado: *${project.name}* por <@${req.user.id}>`);
+    await sendSlack(`📦 Proyecto archivado: *${project.name}* por <@${req.user.id}>`);
 
     res.json({ message: 'Proyecto archivado.', project });
   } catch (err) {
@@ -152,7 +152,7 @@ const unarchiveProject = async (req, res) => {
 
     if (!project) return res.status(404).json({ message: 'Proyecto no encontrado.' });
 
-    await sendSlackNotification(`🔓 Proyecto restaurado: *${project.name}* por <@${req.user.id}>`);
+    await sendSlack(`🔓 Proyecto restaurado: *${project.name}* por <@${req.user.id}>`);
 
     res.json({ message: 'Proyecto restaurado.', project });
   } catch (err) {
@@ -173,7 +173,7 @@ const deleteProject = async (req, res) => {
 
     if (!project) return res.status(404).json({ message: 'Proyecto no encontrado.' });
 
-    await sendSlackNotification(`❌ Proyecto eliminado: *${project.name}* por <@${req.user.id}>`);
+    await sendSlack(`❌ Proyecto eliminado: *${project.name}* por <@${req.user.id}>`);
 
     res.json({ message: 'Proyecto eliminado permanentemente.' });
   } catch (err) {
